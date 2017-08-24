@@ -13,16 +13,16 @@
 
             return {
                 token: function(stream, state) {
-                    if (stream.match("&&&")) {
+                    if (stream.match(/(\%\d\%)/)) {
                         if (!stream.eatWhile(/[\w\s\*\.\>]/)) {
                             return null;
                         }
 
-                        if (stream.match("&&&")) {
-                            return "style2";
+                        if (stream.match(/(\%\d\%)/)) {
+                            return "comment";
                         }
                     }
-                    while (stream.next() != null && !stream.match("&&&", false)) { }
+                    while (stream.next() != null && !stream.match(/(\%\d\%)/, false)) { }
                     return null;
                 }
             };
