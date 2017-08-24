@@ -12,8 +12,9 @@
 <script>
     var simplemde = new SimpleMDE({
         spellChecker: false,
-        mode: "gfmextended"
+        mode: "gfm"
     });
+    simplemde.codemirror.addOverlay("comment");
 </script>
 </body>
 </html>
