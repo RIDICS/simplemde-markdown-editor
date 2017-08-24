@@ -3,14 +3,12 @@
 var CodeMirror = require("codemirror");
 require("codemirror/addon/edit/continuelist.js");
 require("./codemirror/tablist");
-require("./codemirror/mode/comment/comment.js");
 require("codemirror/addon/display/fullscreen.js");
 require("codemirror/mode/markdown/markdown.js");
 require("codemirror/addon/mode/overlay.js");
 require("codemirror/addon/display/placeholder.js");
 require("codemirror/addon/selection/mark-selection.js");
 require("codemirror/mode/gfm/gfm.js");
-require("./codemirror/mode/gfmextended/gfmextended.js");
 require("codemirror/mode/xml/xml.js");
 var CodeMirrorSpellChecker = require("codemirror-spell-checker");
 var marked = require("marked");
@@ -143,7 +141,6 @@ function getState(cm, pos) {
 	pos = pos || cm.getCursor("start");
 	var stat = cm.getTokenAt(pos);
 	if(!stat.type) return {};
-
 	var types = stat.type.split(" ");
 
 	var ret = {},
@@ -243,7 +240,6 @@ function toggleBold(editor) {
 function toggleItalic(editor) {
 	_toggleBlock(editor, "italic", editor.options.blockStyles.italic);
 }
-
 
 /**
  * Action for toggling strikethrough.
@@ -1884,6 +1880,12 @@ SimpleMDE.prototype.value = function(val) {
 	}
 };
 
+/**
+ * Define new codemirror mode.
+ */
+SimpleMDE.prototype.defineMode = function(name, mode) {
+	CodeMirror.defineMode(name, mode);
+};
 
 /**
  * Bind static methods for exports.
