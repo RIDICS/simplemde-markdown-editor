@@ -3,12 +3,14 @@
 var CodeMirror = require("codemirror");
 require("codemirror/addon/edit/continuelist.js");
 require("./codemirror/tablist");
+require("./codemirror/mode/comment/comment.js");
 require("codemirror/addon/display/fullscreen.js");
 require("codemirror/mode/markdown/markdown.js");
 require("codemirror/addon/mode/overlay.js");
 require("codemirror/addon/display/placeholder.js");
 require("codemirror/addon/selection/mark-selection.js");
 require("codemirror/mode/gfm/gfm.js");
+require("./codemirror/mode/gfmextended/gfmextended.js");
 require("codemirror/mode/xml/xml.js");
 var CodeMirrorSpellChecker = require("codemirror-spell-checker");
 var marked = require("marked");
@@ -1261,10 +1263,17 @@ var blockStyles = {
 /**
  * Interface of SimpleMDE.
  */
+var CustomMode;
+
 function SimpleMDE(options) {
 	// Handle options parameter
 	options = options || {};
 
+	if(options.mode === undefined) {
+		CustomMode = "gfm";
+	} else {
+		CustomMode = options.mode;
+	}
 
 	// Used later to refer to it"s parent
 	options.parent = this;
@@ -1475,7 +1484,7 @@ SimpleMDE.prototype.render = function(el) {
 		});
 	} else {
 		mode = options.parsingConfig;
-		mode.name = "gfm";
+		mode.name = CustomMode; // comment
 		mode.gitHubSpice = false;
 	}
 
