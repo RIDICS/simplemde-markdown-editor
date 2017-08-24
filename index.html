@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <title></title>
     <link href="dist/simplemde.min.css" rel="stylesheet">
     <link href="src/css/editor-style.css" rel="stylesheet">
@@ -12,31 +12,67 @@
 <script>
     var simplemde = new SimpleMDE({
         spellChecker: false,
-        mode: "gfm"
+        mode: "gfm",
+        toolbar: [
+            "bold", "italic", "heading", "|", "quote", {
+                name: "comment",
+                action: addComment,
+                className: "fa fa-comment",
+                title: "Add comment"
+            }
+        ]
     });
-    
+
     simplemde.defineMode("comment",
         function() {
 
             return {
                 token: function(stream, state) {
-                    if (stream.match(/(\%\d\%)/)) {
+                    if (stream.match(/(\%\d+\%)/)) {
                         if (!stream.eatWhile(/[\w\s\*\.\>]/)) {
                             return null;
                         }
 
-                        if (stream.match(/(\%\d\%)/)) {
+                        if (stream.match(/(\%\d+\%)/)) {
                             return "comment";
                         }
                     }
-                    while (stream.next() != null && !stream.match(/(\%\d\%)/, false)) { return null; }
-                    
+                    while (stream.next() != null && !stream.match(/(\%\d+\%)/, false)) {
+                        return null;
+                    }
+
                 }
             };
 
         });
 
     simplemde.codemirror.addOverlay("comment");
+
+    function addComment(editor) {
+        var uniqueNumber = Date.now();
+        var cm = editor.codemirror;
+        var output="";
+        var selectedText = cm.getSelection();
+        var selectionStartChar = cm.getCursor("from").ch;
+        var selectionStartLine = cm.getCursor("from").line;
+        var selectionEndChar = cm.getCursor("to").ch;
+        var selectionEndLine = cm.getCursor("to").line;
+        var customCommentarySign = selectedText.match(/(\%\d+\%)/);
+        console.log(customCommentarySign);
+        if (customCommentarySign == null) {
+            var uniqueNumberLength = uniqueNumber.toString().length;
+            var markSize = uniqueNumberLength + 2;// + % + %
+            output = "%" + uniqueNumber + "%" + selectedText + "%" + uniqueNumber + "%";
+            cm.replaceSelection(output);
+            cm.setSelection({ line: selectionStartLine, ch: selectionStartChar}, { line: selectionEndLine, ch: selectionEndChar + 2*markSize });
+            } else {
+            output = selectedText.replace(/(\%\d+\%)/g, "");
+            var markSize = customCommentarySign[0].length;
+            cm.replaceSelection(output);
+            cm.setSelection({ line: selectionStartLine, ch: selectionStartChar}, { line: selectionEndLine, ch: selectionEndChar - 2*markSize });
+        }
+        return uniqueNumber;
+    }
 
 </script>
 </body>
